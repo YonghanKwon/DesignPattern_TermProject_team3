@@ -16,23 +16,23 @@ public class HTMLExporter  implements Table.Exporter{
 						   Iterator columnNames ) throws IOException
 
 	{
-		out.write("<h2>"+tableName == null ? "<anonymous>" : tableName +"</h2>");
-		
-		out.write("<table>");
+		out.write("<h2>"+tableName == null ? "<anonymous>" : tableName +"</h2>\n");
+	
+		out.write("<table>\n");
 		storeRow( columnNames );
 	
 	}
 	
 	public void storeRow( Iterator data ) throws IOException
 	{
-		out.write("<tr>");
+		out.write("<tr>\n");
 		while(data.hasNext()) {
 			Object datum = data.next();
 			if(datum != null)
-				out.write("<td>"+datum.toString()+"</td>");
+				out.write("<td>"+datum.toString()+"</td>\n");
 			
 		}
-		out.write("</tr>");
+		out.write("</tr>\n");
 	}
 
 	public void startTable() throws IOException {/*nothing to do*/}
