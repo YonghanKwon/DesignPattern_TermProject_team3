@@ -814,15 +814,7 @@ import com.holub.tools.ArrayIterator;
 
 			Reader in = new FileReader("people");
 			people = new ConcreteTable(new CSVImporter(in));
-			in.close();	
-			
-			Writer out_html = new FileWriter("people.html");
-			people.export(new HTMLExporter(out_html));
-			out_html.close();
-			
-			out_html = new FileWriter("address.html");
-			address.export(new HTMLExporter(out_html));
-			out_html.close();
+			in.close();
 		}
 
 		public void testJoin() {
