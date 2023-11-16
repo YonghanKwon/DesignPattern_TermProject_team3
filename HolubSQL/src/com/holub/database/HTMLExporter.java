@@ -17,8 +17,8 @@ public class HTMLExporter  implements Table.Exporter{
 
 	{
 		out.write("<h2>"+tableName == null ? "<anonymous>" : tableName +"</h2>");
-		out.write("\n");
-		out.write("<table>\n");
+		
+		out.write("<table>");
 		storeRow( columnNames );
 	
 	}
