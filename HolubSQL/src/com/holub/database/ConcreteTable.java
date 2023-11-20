@@ -114,6 +114,11 @@ import com.holub.tools.ArrayIterator;
 		}
 		importer.endTable();
 	}
+	
+	//다른 Table(ConcreteTable로 casting)의 columnNames 받아오기 위해 추가.
+	public String[] getcolumnNames() {
+		return columnNames;
+	}
 
 	// ----------------------------------------------------------------------
 	public void export(Table.Exporter exporter) throws IOException {
@@ -460,6 +465,18 @@ import com.holub.tools.ArrayIterator;
 		// Create places to hold the result of the join and to hold
 		// iterators for each table involved in the join.
 
+		//위의 if문에 걸리지 않는데 requestedColumns가 null이면 이는 select * from a,b.. 형태임.
+		//ArrayList로 값 추가 후 다시 Array로 변환, requestedColumns에 대입.
+		if(requestedColumns==null) {
+			ArrayList<String> column = new ArrayList<>();
+			for(int i=0;i<allTables.length;i++) {
+				for(int j=0;j<((ConcreteTable)allTables[i]).getcolumnNames().length;j++)
+				column.add(((ConcreteTable)allTables[i]).getcolumnNames()[j]);
+			}
+			requestedColumns=column.toArray(new String[column.size()]);
+		}
+		
+		
 		Table resultTable = new ConcreteTable(null, requestedColumns);
 		Cursor[] envelope = new Cursor[allTables.length];
 
