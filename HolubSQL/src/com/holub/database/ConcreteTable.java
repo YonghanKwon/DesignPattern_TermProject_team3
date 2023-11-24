@@ -120,6 +120,15 @@ import com.holub.tools.ArrayIterator;
 		return columnNames;
 	}
 
+	public LinkedList getrowSet() {
+		return rowSet;
+	}
+	public String gettableName() {
+		return tableName;
+	}
+	public Table accept(Visitor visitor) {
+		return visitor.visit(this);
+	}
 	// ----------------------------------------------------------------------
 	public void export(Table.Exporter exporter) throws IOException {
 		exporter.startTable();

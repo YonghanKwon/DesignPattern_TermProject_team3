@@ -28,6 +28,9 @@ package com.holub.database;
 
 import java.io.*;
 import java.util.*;
+
+import javax.xml.stream.XMLStreamException;
+
 import com.holub.database.Selector;
 
 /** A table is a database-like table that provides support for
@@ -36,13 +39,13 @@ import com.holub.database.Selector;
  * @include /etc/license.txt
  */
 
-public interface Table extends Serializable, Cloneable
+public interface Table extends Serializable, Cloneable, TableAccepter
 {
 	/** Return a shallow copy of the table (the contents are not
 	 *  copied.
 	 */
 	Object clone() throws CloneNotSupportedException;
-
+	Table accept(Visitor visitor);
 	/** Return the table name that was passed to the constructor
 	 *  (or read from the disk in the case of a table that
 	 *  was loaded from the disk.) THis is a "getter," but

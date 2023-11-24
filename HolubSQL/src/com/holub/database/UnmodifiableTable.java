@@ -114,4 +114,8 @@ public class UnmodifiableTable implements Table
 	 *  that was passed to the constructor. Use the method with care.
 	 */
 	public Table extract(){ return wrapped;	}
+	
+	public Table accept(Visitor visitor) {
+		return visitor.visit(this);
+	}
 }
