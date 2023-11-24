@@ -31,8 +31,8 @@ public class HTMLExporterTest {
 
         }
 //        HTMLExporter테스트
-        assertEquals(stringBuffer.toString(),"<h2>people</h2><table><tr><td>Last</td><td>First</td><td>Id</td></tr>" +
-                "<tr><td>Allen</td><td>Holub</td></tr><tr><td>Ichabod</td><td>Crane</td><td>2</td></tr><tr><td>Rip</td><td>VanWinkle</td><td>3</td></tr><tr><td>Goldie</td><td>Locks</td><td>4</td></tr>");
+        assertEquals(stringBuffer.toString(),"<h2>people</h2>\n<table>\n<tr>\n<td>Last</td>\n<td>First</td>\n<td>Id</td>\n</tr>\n" +
+                "<tr>\n<td>Allen</td>\n<td>Holub</td>\n<td>1</td>\n</tr>\n<tr>\n<td>Ichabod</td>\n<td>Crane</td>\n<td>2</td>\n</tr>\n<tr>\n<td>Rip</td>\n<td>VanWinkle</td>\n<td>3</td>\n</tr>\n<tr>\n<td>Goldie</td>\n<td>Locks</td>\n<td>4</td>\n</tr>\n");
 
         fileReader.close();
 
