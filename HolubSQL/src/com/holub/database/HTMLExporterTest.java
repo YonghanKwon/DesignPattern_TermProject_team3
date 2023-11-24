@@ -38,16 +38,19 @@ public class HTMLExporterTest {
 
         System.out.println("-------------------------------------------");
 
-        /*Table university = TableFactory.create("university",
-                new String[]{"name", "location"});
-        university.insert(new String[]{"chungang", "seoul"});
-        university.insert(new String[]{"seoul", "seoul"});
-        university.insert(new String[]{"woosong", "daejeon"});
-        Writer out1 = new FileWriter("c:/dp2023/university");
+        Table bloodstorage = TableFactory.create("bloodstorage",
+                new String[]{"Id", "Name", "Bloodtype", "Age", "Gender"});
+        bloodstorage.insert(new String[]{"1", "Allen", "A", "20", "F"});
+        bloodstorage.insert(new String[]{"2", "Troy", "B", "25", "M"});
+        bloodstorage.insert(new String[]{"3", "Kevin", "AB", "40", "M"});
+        bloodstorage.insert(new String[]{"4", "Goldie", "O", "30", "F"});
+        bloodstorage.insert(new String[]{"5", "Chunsik", "B", "31", "M"});
+        bloodstorage.insert(new String[]{"6", "Bob", "A", "27", "M"});
+        Writer out1 = new FileWriter("c:/dp2023/bloodstorage");
         HTMLExporter builder2 = new HTMLExporter(out1);
-        university.export(builder2);
+        bloodstorage.export(builder2);
         out1.close();
-        File file2 = new File("c:/dp2023/university");
+        File file2 = new File("c:/dp2023/bloodstorage");
         StringBuffer stringBuffer2 = new StringBuffer();
         FileReader fileReader2 = new FileReader(file2);
         int index2 = 0;
@@ -56,27 +59,36 @@ public class HTMLExporterTest {
 
         }
 //        HTMLExporter테스트
-        assertEquals(stringBuffer2.toString(), is(equalTo("<html><body>university<table border=\"1\"><th>name</th><th>location</th><tr><td>chungang</td><td>seoul</td></tr><tr><td>seoul</td><td>seoul</td>" +
-                "</tr><tr><td>woosong</td><td>daejeon</td></tr></table></body></html>")));
-
+        assertEquals(stringBuffer2.toString(), "<h2>bloodstorage</h2>\n<table>\n<tr>\n<td>Id</td>\n<td>Name</td>\n<td>Bloodtype</td>\n<td>Age</td>\n<td>Gender</td>\n</tr>\n" + "<tr>\n<td>1</td>\n<td>Allen</td>\n<td>A</td>\n<td>20</td>\n<td>F</td>\n</tr>\n<tr>\n<td>2</td>\n<td>Troy</td>\n<td>B</td>\n<td>25</td>\n<td>M</td>\n</tr>\n<tr>\n<td>3</td>\n<td>Kevin</td>\n<td>AB</td>\n<td>40</td>\n<td>M</td>\n</tr>\n<tr>\n<td>4</td>\n<td>Goldie</td>\n<td>O</td>\n<td>30</td>\n<td>F</td>\n</tr>\n<tr>\n<td>5</td>\n<td>Chunsik</td>\n<td>B</td>\n<td>31</td>\n<td>M</td>\n</tr>\n<tr>\n<td>6</td>\n<td>Bob</td>\n<td>A</td>\n<td>27</td>\n<td>M</td>\n</tr>\n");
+        
+        fileReader2.close();
+        
+        System.out.println("-------------------------------------------------");
        
+        Table movie = TableFactory.create("movie",
+                new String[]{"Title", "Releaseyear", "Runningtime", "Rating", "Genre"});
+        movie.insert(new String[]{"The Shawshank Redemption", "1994", "142m", "9.3", "Drama"});
+        movie.insert(new String[]{"The Godfather", "1972", "175m", "9.2", "Crime"});
+        movie.insert(new String[]{"The Dark Knight", "2008", "152m", "9.0", "Action"});
+        movie.insert(new String[]{"Forrest Gump", "1994", "142m", "8.8", "Drama"});
+        movie.insert(new String[]{"Oppenheimer", "2023", "180", "8.5", "Biography"});
+        Writer out2 = new FileWriter("c:/dp2023/movie");
+        HTMLExporter builder3 = new HTMLExporter(out2);
+        movie.export(builder3);
+        out2.close();
+        File file3 = new File("c:/dp2023/movie");
         StringBuffer stringBuffer3 = new StringBuffer();
-        File file3 = new File("c:/dp2023/university.html");
         FileReader fileReader3 = new FileReader(file3);
         int index3 = 0;
         while ((index3 = fileReader3.read()) != -1) {
             stringBuffer3.append((char) index3);
 
         }
-//        getFileVisitor, decorateVisitor테스트
-        assertEquals(stringBuffer3.toString(), is(equalTo("<html><body>university<table border=\"1\"><th>name</th><th>location</th><tr><td>chungang</td><td>seoul</td></tr><tr>" +
-                "<td>seoul</td><td>seoul</td>" +
-                "</tr><tr><td>woosong</td><td>daejeon</td></tr></table></body></html>")));
-
-        fileReader2.close();
+//        HTMLExporter테스트
+        assertEquals(stringBuffer3.toString(), "<h2>movie</h2>\n<table>\n<tr>\n<td>Title</td>\n<td>Releaseyear</td>\n<td>Runningtime</td>\n<td>Rating</td>\n<td>Genre</td>\n</tr>\n" + "<tr>\n<td>The Shawshank Redemption</td>\n<td>1994</td>\n<td>142m</td>\n<td>9.3</td>\n<td>Drama</td>\n</tr>\n<tr>\n<td>The Godfather</td>\n<td>1972</td>\n<td>175m</td>\n<td>9.2</td>\n<td>Crime</td>\n</tr>\n<tr>\n<td>The Dark Knight</td>\n<td>2008</td>\n<td>152m</td>\n<td>9.0</td>\n<td>Action</td>\n</tr>\n<tr>\n<td>Forrest Gump</td>\n<td>1994</td>\n<td>142m</td>\n<td>8.8</td>\n<td>Drama</td>\n</tr>\n<tr>\n<td>Oppenheimer</td>\n<td>2023</td>\n<td>180</td>\n<td>8.5</td>\n<td>Biography</td>\n</tr>\n");
+        
         fileReader3.close();
-        */
-
+        
+        System.out.println("-------------------------------------------------");
     }
-
 }
