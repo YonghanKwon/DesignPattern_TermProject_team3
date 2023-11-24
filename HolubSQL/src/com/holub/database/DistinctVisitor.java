@@ -10,7 +10,6 @@ public class DistinctVisitor implements Visitor{
 	@Override
 	public Table visit(ConcreteTable table) {
 		
-		System.out.println(table);
 		Table res = TableFactory.create(table.gettableName(),table.getcolumnNames());
 		
 		
