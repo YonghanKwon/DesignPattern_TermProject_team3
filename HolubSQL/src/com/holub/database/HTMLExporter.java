@@ -16,7 +16,7 @@ public class HTMLExporter  implements Table.Exporter{
 						   Iterator columnNames ) throws IOException
 
 	{
-		out.write("<h2>"+tableName == null ? "<anonymous>" : tableName +"</h2>\n");
+		out.write(tableName == null ? "<anonymous>" : tableName +"</h2>\n");
 	
 		out.write("<table>\n");
 		storeRow( columnNames );
@@ -35,6 +35,9 @@ public class HTMLExporter  implements Table.Exporter{
 		out.write("</tr>\n");
 	}
 
-	public void startTable() throws IOException {/*nothing to do*/}
-	public void endTable()   throws IOException {/*nothing to do*/}
+	public void startTable() throws IOException {
+		out.write("<h2>");
+	/*nothing to do*/}
+	public void endTable()   throws IOException {
+	/*nothing to do*/}
 }
