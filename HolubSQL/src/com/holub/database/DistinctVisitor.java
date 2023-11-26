@@ -1,6 +1,7 @@
 package com.holub.database;
 
 import java.util.Iterator;
+import java.util.Arrays;
 
 import com.holub.tools.ArrayIterator;
 
@@ -28,18 +29,21 @@ public class DistinctVisitor implements Visitor{
 				for(int j=0;j<colName.length;j++) {
 					temp_arr[j]=rows.next().toString();
 				}
-				for(int j=0;j<idx;j++) {
-					for(int k=0;k<colName.length;k++) {
-						if(temp_arr[k]==Data[j][k] && flag)
-							flag=false;
-						else
-							flag=true;						
+
+					for(int k=0;k<idx;k++) {
+						if(Arrays.deepEquals(temp_arr,Data[k])) {
+							flag=false;							
+							break;
+						}
+						else {
+							flag=true;
+						}					
 					}
-				}
+				
 				if(flag)
-				{
+				{	
 					for(int j=0;j<colName.length;j++) {
-						Data[idx][j]=temp_arr[j];						
+						Data[idx][j]=temp_arr[j];
 					}
 					res.insert(temp_arr);
 					idx++;
