@@ -435,7 +435,7 @@ public final class Database { /*
 		CHAR		= tokens.create( "(var)?char"				),
 		DATE		= tokens.create( "date(\\s*\\(.*?\\))?"		),
 
-		SELECTIDENTIFIER = tokens.create("(min|max)\\([a-zA-Z_0-9/\\\\:~*]+\\)"),
+		SELECTIDENTIFIER = tokens.create("(min|max|avg)\\([a-zA-Z_0-9/\\\\:~*]+\\)"),
 		IDENTIFIER	= tokens.create( "[a-zA-Z_0-9/\\\\:~]+"		); //{=Database.lastToken}
 
 		private String expression; // SQL expression being parsed
@@ -640,40 +640,41 @@ public final class Database { /*
 				((Table) i.next()).begin();
 		}
 
-		/** Commit transactions at the current level.
-	 *  @throws NoSuchElementException if no <code>begin()</code> was issued.
-	 */
-	public void commit() throws ParseFailure
-	{	
-		assert transactionLevel > 0 : "No begin() for commit()";
-		--transactionLevel;
-		
-		try
-		{	Collection currentTables = tables.values();
-			for( Iterator i = currentTables.iterator(); i.hasNext() ;)
-				((Table) i.next()).commit( Table.THIS_LEVEL );
-		}
-		catch(NoSuchElementException e)
-		{	verify( false, "No BEGIN to match COMMIT" );
-		}
-	}
+		/**
+		 * Commit transactions at the current level.
+		 * 
+		 * @throws NoSuchElementException if no <code>begin()</code> was issued.
+		 */
+		public void commit() throws ParseFailure {
+			assert transactionLevel > 0 : "No begin() for commit()";
+			--transactionLevel;
 
-		/** Roll back transactions at the current level
-	 *  @throws NoSuchElementException if no <code>begin()</code> was issued.
-	 */
-	public void rollback() throws ParseFailure
-	{	assert transactionLevel > 0 : "No begin() for commit()";
-		--transactionLevel;
-		try
-		{	Collection currentTables = tables.values();
+			try {
+				Collection currentTables = tables.values();
+				for (Iterator i = currentTables.iterator(); i.hasNext();)
+					((Table) i.next()).commit(Table.THIS_LEVEL);
+			} catch (NoSuchElementException e) {
+				verify(false, "No BEGIN to match COMMIT");
+			}
+		}
 
-			for( Iterator i = currentTables.iterator(); i.hasNext() ;)
-				((Table) i.next()).rollback( Table.THIS_LEVEL );
+		/**
+		 * Roll back transactions at the current level
+		 * 
+		 * @throws NoSuchElementException if no <code>begin()</code> was issued.
+		 */
+		public void rollback() throws ParseFailure {
+			assert transactionLevel > 0 : "No begin() for commit()";
+			--transactionLevel;
+			try {
+				Collection currentTables = tables.values();
+
+				for (Iterator i = currentTables.iterator(); i.hasNext();)
+					((Table) i.next()).rollback(Table.THIS_LEVEL);
+			} catch (NoSuchElementException e) {
+				verify(false, "No BEGIN to match ROLLBACK");
+			}
 		}
-		catch(NoSuchElementException e)
-		{	verify( false, "No BEGIN to match ROLLBACK" );
-		}
-	}
 
 		// @transactions-end
 		// @parser-start
@@ -816,22 +817,23 @@ public final class Database { /*
 				affectedRows = doDelete(tableName, expr());
 			} else if (in.matchAdvance(SELECT) != null) {
 				String distinct = in.matchAdvance(DISTINCT);
+
 				List<String> columns = selectidList();
 
 //				for(String str : columns) {
 //					System.out.println(str);
 //				}
-				
+
 				List<AggregateFunction> agg = null;
-				List<String> aggregateColumns = new ArrayList<>();
+				List<String> aggregateFunc = new ArrayList<>();
 				if (columns != null) {
-	                if (extractAggregate(columns, aggregateColumns)) {
-	                    agg = new ArrayList<>(aggregateColumns.size());
-	                    for(int i = 0; i < aggregateColumns.size(); i++) {
-	                    	agg.add(new AggregateFunction(columns.get(i), aggregateColumns.get(i)));
-	                    }
-	                }
-	            }
+					if (extractAggregate(columns, aggregateFunc)) {
+						agg = new ArrayList<>(aggregateFunc.size());
+						for (int i = 0; i < aggregateFunc.size(); i++) {
+							agg.add(new AggregateFunction(aggregateFunc.get(i), columns.get(i)));
+						}
+					}
+				}
 
 				String into = null;
 				if (in.matchAdvance(INTO) != null)
@@ -841,13 +843,20 @@ public final class Database { /*
 				List requestedTableNames = idList();
 
 				Expression where = (in.matchAdvance(WHERE) == null) ? null : expr();
+
+//				if(distinct != null) {
+//					System.out.println(distinct);
+//				}
 				Table result = doSelect(columns, into, requestedTableNames, where);
-				if(distinct != null) {
-					result.accept(new DistinctVisitor());
+
+				
+				if (distinct != null) {
+					result = result.accept(new DistinctVisitor()).accept(new DistinctVisitor());
 				}
-				if(agg != null) {
-					result.accept(new AggregateVisitor(aggregateColumns));
+				if (agg != null) {
+					result = result.accept(new AggregateVisitor(agg)).accept(new AggregateVisitor(agg));
 				}
+				System.out.println(result);
 				return result;
 			} else {
 				error("Expected insert, create, drop, use, " + "update, delete or select");
@@ -855,48 +864,53 @@ public final class Database { /*
 
 			return null;
 		}
+
 		// ----------------------------------------------------------------------
 		// idList ::= IDENTIFIER idList' | STAR
 		// idList' ::= COMMA IDENTIFIER idList'
 		// | e
 		// Return a Collection holding the list of columns
 		// or null if a * was found.
+		private Table doDistinct(Table table) {
+			table = table.accept(new DistinctVisitor()).accept(new DistinctVisitor());
+			return table;
+		}
 
 		private List<String> selectidList() throws ParseFailure {
 			List<String> identifiers = null;
-	        if (in.matchAdvance(STAR) == null) {
-	            identifiers = new ArrayList<>();
-	            String id;
-	            while (true) {
-	                if (in.match(SELECTIDENTIFIER)) {
-	                    id = in.matchAdvance(SELECTIDENTIFIER);
-	                } else if (in.match(IDENTIFIER)) {
-	                    id = in.matchAdvance(IDENTIFIER);
-	                } else {
-	                    break;
-	                }
-	                identifiers.add(id);
-	                if (in.matchAdvance(COMMA) == null)
-	                    break;
-	            }
-	        }
-	        return identifiers;
+			if (in.matchAdvance(STAR) == null) {
+				identifiers = new ArrayList<>();
+				String id;
+				while (true) {
+					if (in.match(SELECTIDENTIFIER)) {
+						id = in.matchAdvance(SELECTIDENTIFIER);
+					} else if (in.match(IDENTIFIER)) {
+						id = in.matchAdvance(IDENTIFIER);
+					} else {
+						break;
+					}
+					identifiers.add(id);
+					if (in.matchAdvance(COMMA) == null)
+						break;
+				}
+			}
+			return identifiers;
 		}
 
-		private boolean extractAggregate(List<String> columns, List<String> aggregateColumnList) {
+		private boolean extractAggregate(List<String> columns, List<String> aggregateFunc) {
 			boolean chk = false;
-			List<String> extractedAgg = new ArrayList<>();
-			for(String str : columns) {
-				if(str.contains("MAX") || str.contains("MIN")) {
+			List<String> extractedCol = new ArrayList<>();
+			for (String str : columns) {
+				if (str.contains("MAX") || str.contains("MIN") || str.contains("AVG")) {
 					String[] tmp = str.split("\\(|\\)");
-					System.out.println(tmp[0] + " " + tmp[1]);
-					extractedAgg.add(tmp[0]);
-					aggregateColumnList.add(tmp[1]);
+//					System.out.println(tmp[0] + " " + tmp[1]);
+					aggregateFunc.add(tmp[0]);
+					extractedCol.add(tmp[1]);
 					chk = true;
 				}
 			}
 			columns.clear();
-			for(String str : extractedAgg) {
+			for (String str : extractedCol) {
 				columns.add(str);
 			}
 			return chk;
@@ -1179,13 +1193,12 @@ public final class Database { /*
 			private final boolean isAnd;
 			private final Expression left, right;
 
-			public LogicalExpression( Expression left,  Token op,
-													Expression right )
-		{	assert op==AND || op==OR;
-			this.isAnd	= (op == AND);
-			this.left	= left;
-			this.right	= right;
-		}
+			public LogicalExpression(Expression left, Token op, Expression right) {
+				assert op == AND || op == OR;
+				this.isAnd = (op == AND);
+				this.left = left;
+				this.right = right;
+			}
 
 			public Value evaluate(Cursor[] tables) throws ParseFailure {
 				Value leftValue = left.evaluate(tables);
@@ -1456,69 +1469,62 @@ public final class Database { /*
 		// ======================================================================
 		// Workhorse methods called from the parser.
 		//
-		private Table doSelect( List columns, String into,
-										List requestedTableNames,
-										final Expression where )
-										throws ParseFailure
-	{
+		private Table doSelect(List columns, String into, List requestedTableNames, final Expression where)
+				throws ParseFailure {
 
-		Iterator tableNames = requestedTableNames.iterator();
+			Iterator tableNames = requestedTableNames.iterator();
 
-		assert tableNames.hasNext() : "No tables to use in select!" ;
+			assert tableNames.hasNext() : "No tables to use in select!";
 
-		// The primary table is the first one listed in the
-		// FROM clause. The participantsInJoin are the other
-		// tables listed in the FROM clause. We're passed in the
-		// table names; use these names to get the actual Table
-		// objects.
+			// The primary table is the first one listed in the
+			// FROM clause. The participantsInJoin are the other
+			// tables listed in the FROM clause. We're passed in the
+			// table names; use these names to get the actual Table
+			// objects.
 
-		Table primary = (Table) tables.get( (String) tableNames.next() );
+			Table primary = (Table) tables.get((String) tableNames.next());
 
-		List participantsInJoin = new ArrayList();
-		while( tableNames.hasNext() )
-		{	String participant = (String) tableNames.next();
-			participantsInJoin.add( tables.get(participant) );
-		}
-
-		// Now do the select operation. First create a Strategy
-		// object that picks the correct rows, then pass that
-		// object through to the primary table's select() method.
-
-		Selector selector = (where == null) ? Selector.ALL : //{=Database.selector}
-			new Selector.Adapter()
-			{	public boolean approve(Cursor[] tables)
-				{	try
-					{	
-						Value result = where.evaluate(tables);
-
-						verify( result instanceof BooleanValue,
-								"WHERE clause must yield boolean result" );
-						return ((BooleanValue)result).value();
-					}
-					catch( ParseFailure e )
-					{	throw new ThrowableContainer(e);
-					}
-				}
-			};
-
-		try
-		{	Table result = primary.select(selector, columns, participantsInJoin);
-
-			// If this is a "SELECT INTO <table>" request, remove the 
-			// returned table from the UnmodifiableTable wrapper, give
-			// it a name, and put it into the tables Map.
-
-			if( into != null )
-			{	result = ((UnmodifiableTable)result).extract();
-				result.rename(into);
-				tables.put( into, result );
+			List participantsInJoin = new ArrayList();
+			while (tableNames.hasNext()) {
+				String participant = (String) tableNames.next();
+				participantsInJoin.add(tables.get(participant));
 			}
-			return result;
+
+			// Now do the select operation. First create a Strategy
+			// object that picks the correct rows, then pass that
+			// object through to the primary table's select() method.
+
+			Selector selector = (where == null) ? Selector.ALL : // {=Database.selector}
+					new Selector.Adapter() {
+						public boolean approve(Cursor[] tables) {
+							try {
+								Value result = where.evaluate(tables);
+
+								verify(result instanceof BooleanValue, "WHERE clause must yield boolean result");
+								return ((BooleanValue) result).value();
+							} catch (ParseFailure e) {
+								throw new ThrowableContainer(e);
+							}
+						}
+					};
+
+			try {
+				Table result = primary.select(selector, columns, participantsInJoin);
+
+				// If this is a "SELECT INTO <table>" request, remove the
+				// returned table from the UnmodifiableTable wrapper, give
+				// it a name, and put it into the tables Map.
+
+				if (into != null) {
+					result = ((UnmodifiableTable) result).extract();
+					result.rename(into);
+					tables.put(into, result);
+				}
+				return result;
+			} catch (ThrowableContainer container) {
+				throw (ParseFailure) container.contents();
+			}
 		}
-		catch( ThrowableContainer container )
-		{	throw (ParseFailure) container.contents();
-		}
-	}
 
 		// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 		private int doInsert(String tableName, List columns, List values) throws ParseFailure {
