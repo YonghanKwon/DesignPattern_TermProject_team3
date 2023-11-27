@@ -820,17 +820,14 @@ public final class Database { /*
 
 				List<String> columns = selectidList();
 
-//				for(String str : columns) {
-//					System.out.println(str);
-//				}
 
-				List<AggregateFunction> agg = null;
-				List<String> aggregateFunc = new ArrayList<>();
+				List<String> agg = null;
+				List<String> agg_tmp = new ArrayList<>();
 				if (columns != null) {
-					if (extractAggregate(columns, aggregateFunc)) {
-						agg = new ArrayList<>(aggregateFunc.size());
-						for (int i = 0; i < aggregateFunc.size(); i++) {
-							agg.add(new AggregateFunction(aggregateFunc.get(i), columns.get(i)));
+					if (extractAggregate(columns, agg_tmp)) {
+						agg = new ArrayList<>(agg_tmp.size());
+						for (int i = 0; i < agg_tmp.size(); i++) {
+							agg.add(agg_tmp.get(i));
 						}
 					}
 				}
@@ -844,19 +841,14 @@ public final class Database { /*
 
 				Expression where = (in.matchAdvance(WHERE) == null) ? null : expr();
 
-//				if(distinct != null) {
-//					System.out.println(distinct);
-//				}
 				Table result = doSelect(columns, into, requestedTableNames, where);
 
-				
 				if (distinct != null) {
 					result = result.accept(new DistinctVisitor()).accept(new DistinctVisitor());
 				}
 				if (agg != null) {
 					result = result.accept(new AggregateVisitor(agg)).accept(new AggregateVisitor(agg));
 				}
-				System.out.println(result);
 				return result;
 			} else {
 				error("Expected insert, create, drop, use, " + "update, delete or select");
@@ -871,10 +863,6 @@ public final class Database { /*
 		// | e
 		// Return a Collection holding the list of columns
 		// or null if a * was found.
-		private Table doDistinct(Table table) {
-			table = table.accept(new DistinctVisitor()).accept(new DistinctVisitor());
-			return table;
-		}
 
 		private List<String> selectidList() throws ParseFailure {
 			List<String> identifiers = null;
@@ -903,7 +891,6 @@ public final class Database { /*
 			for (String str : columns) {
 				if (str.contains("MAX") || str.contains("MIN") || str.contains("AVG")) {
 					String[] tmp = str.split("\\(|\\)");
-//					System.out.println(tmp[0] + " " + tmp[1]);
 					aggregateFunc.add(tmp[0]);
 					extractedCol.add(tmp[1]);
 					chk = true;

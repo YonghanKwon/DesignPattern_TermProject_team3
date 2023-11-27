@@ -7,27 +7,27 @@ import java.util.ListIterator;
 import com.holub.tools.ArrayIterator;
 
 public class AggregateVisitor implements Visitor {
-	private List<AggregateFunction> aggregateFunc;
-	public AggregateVisitor(List<AggregateFunction> aggregateFunc) {
+	private List<String> aggregateFunc;
+	public AggregateVisitor(List<String> aggregateFunc) {
 		this.aggregateFunc = aggregateFunc;
 	}
     @Override
     public Table visit(ConcreteTable table) {
     	double[] tmp_res = new double[aggregateFunc.size()];
 		for(int i = 0; i < aggregateFunc.size(); i++) {
-			if (aggregateFunc.get(i).getFunctionName().equals("MAX")) {
+			if (aggregateFunc.get(i).equals("MAX")) {
 				tmp_res[i] = Double.MIN_VALUE;
 			}
-			if (aggregateFunc.get(i).getFunctionName().equals("MIN")) {
+			if (aggregateFunc.get(i).equals("MIN")) {
 				tmp_res[i] = Double.MAX_VALUE;
 			}
-			if (aggregateFunc.get(i).getFunctionName().equals("AVG")) {
+			if (aggregateFunc.get(i).equals("AVG")) {
 				tmp_res[i] = 0;
 			}
 		}
     	String[] cols = new String[aggregateFunc.size()];
     	for(int i = 0; i < aggregateFunc.size(); i++) {
-    		cols[i] = aggregateFunc.get(i).getFunctionName() + "(" + aggregateFunc.get(i).getColumnName() + ")";
+    		cols[i] = aggregateFunc.get(i) + "(" + aggregateFunc.get(i) + ")";
     	}
     	Table res = TableFactory.create(table.gettableName(), cols);
     	
@@ -41,24 +41,24 @@ public class AggregateVisitor implements Visitor {
 			}
 			String[] row_tmp = key.toString().split(" ");
 			for (int i = 0; i < aggregateFunc.size(); i++) {
-				if (aggregateFunc.get(i).getFunctionName().equals("MAX")) {
+				if (aggregateFunc.get(i).equals("MAX")) {
 					tmp_res[i] = tmp_res[i] > Double.parseDouble(row_tmp[i]) ? tmp_res[i] : Double.parseDouble(row_tmp[i]);
 				}
-				if (aggregateFunc.get(i).getFunctionName().equals("MIN")) {
+				if (aggregateFunc.get(i).equals("MIN")) {
 					tmp_res[i] = tmp_res[i] < Double.parseDouble(row_tmp[i]) ? tmp_res[i] : Double.parseDouble(row_tmp[i]);
 				}
-				if (aggregateFunc.get(i).getFunctionName().equals("AVG")) {
+				if (aggregateFunc.get(i).equals("AVG")) {
 					tmp_res[i] += Double.parseDouble(row_tmp[i]);
 				}
     		}
     	}
     	for(int i = 0; i < aggregateFunc.size(); i++) {
-			if (aggregateFunc.get(i).getFunctionName().equals("AVG")) {
+			if (aggregateFunc.get(i).equals("AVG")) {
 				tmp_res[i] /= table.getrowSet().size();
 			}	
     	}
     	for(int i = 0; i < aggregateFunc.size(); i++) {
-    		cols[i] = String.valueOf(tmp_res[i]);
+    		cols[i] = String.format("%.2f", tmp_res[i]);
     	}
     	res.insert(cols);
     	
