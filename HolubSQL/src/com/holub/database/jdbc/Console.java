@@ -233,6 +233,7 @@ public class Console
 				System.exit(1);
 
 			File database = new File( databaseName );
+
 			if( database.exists() && database.isDirectory() )
 				break;
 			else

@@ -402,6 +402,7 @@ public final class Database
 		USE			= tokens.create( "'USE"		),
 		VALUES 		= tokens.create( "'VALUES"	),
 		WHERE		= tokens.create( "'WHERE"	),
+		DISTINCT	= tokens.create("'DISTINCT"),
 
 		WORK		= tokens.create( "WORK|TRAN(SACTION)?"		),
 		ADDITIVE	= tokens.create( "\\+|-" 					),
@@ -413,8 +414,9 @@ public final class Database
 		NUMERIC		= tokens.create( "decimal|numeric|real|double"),
 		CHAR		= tokens.create( "(var)?char"				),
 		DATE		= tokens.create( "date(\\s*\\(.*?\\))?"		),
-
+		
 		IDENTIFIER	= tokens.create( "[a-zA-Z_0-9/\\\\:~]+"		); //{=Database.lastToken}
+		
 
 	private String  expression;	// SQL expression being parsed
 	private Scanner in;			// The current scanner.
@@ -708,7 +710,7 @@ public final class Database
 	 *
 	 * @throws ParseFailure something's wrong with the SQL
 	 * @throws IOException a database or table couldn't be opened
-	 * 		or accessed.
+	 * 		or accessed.C:
 	 * @see #createDatabase
 	 * @see #createTable
 	 * @see #dropTable
@@ -719,7 +721,6 @@ public final class Database
 		affectedRows = 0;	// is modified by UPDATE, INSERT, DELETE
 
 		// These productions map to public method calls:
-
 		if( in.matchAdvance(CREATE) != null )
 		{	if( in.match( DATABASE ) )
 			{	in.advance();
@@ -796,19 +797,27 @@ public final class Database
 			affectedRows = doDelete( tableName, expr() );
 		}
 		else if( in.matchAdvance(SELECT) != null )
-		{	List columns = idList();
-
+		{	
+			boolean distinct = false;
+			if( in.matchAdvance(DISTINCT)!=null) {
+				distinct=true;
+			}
+			List columns = idList();
 			String into = null;
 			if( in.matchAdvance(INTO) != null )
 				into = in.required(IDENTIFIER);
 
 			in.required( FROM );
 			List requestedTableNames = idList();
+			
 
 			Expression where = (in.matchAdvance(WHERE) == null)
 								? null : expr();
 			Table result = doSelect(columns, into,
 								requestedTableNames, where );
+			if(distinct)
+				result=doDistinct(result);
+
 			return result;
 		}
 		else
@@ -1411,6 +1420,7 @@ public final class Database
 		while( tableNames.hasNext() )
 		{	String participant = (String) tableNames.next();
 			participantsInJoin.add( tables.get(participant) );
+			
 		}
 
 		// Now do the select operation. First create a Strategy
@@ -1451,6 +1461,11 @@ public final class Database
 		catch( ThrowableContainer container )
 		{	throw (ParseFailure) container.contents();
 		}
+	}
+	
+	private Table doDistinct(Table table) {
+		table=table.accept(new DistinctVisitor()).accept(new DistinctVisitor());
+		return table;
 	}
 	//- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 	private int doInsert(String tableName, List columns, List values)

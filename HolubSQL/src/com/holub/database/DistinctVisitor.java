@@ -12,11 +12,7 @@ public class DistinctVisitor implements Visitor{
 	public Table visit(ConcreteTable table) {
 		
 		Table res = TableFactory.create(table.gettableName(),table.getcolumnNames());
-		
-		
-		
-		
-		
+				
 		String[] colName = table.getcolumnNames();
 		String[] temp_arr=new String[colName.length];
 		String[][] Data = new String[table.getrowSet().size()][colName.length];
@@ -56,6 +52,6 @@ public class DistinctVisitor implements Visitor{
 		return res;
 	}
 	public Table visit(UnmodifiableTable table) {
-		return table;
+		return table.extract();
 	}
 }

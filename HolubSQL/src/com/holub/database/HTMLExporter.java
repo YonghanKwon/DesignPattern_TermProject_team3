@@ -36,8 +36,9 @@ public class HTMLExporter  implements Table.Exporter{
 	}
 
 	public void startTable() throws IOException {
+		out.write("<html>\n");
 		out.write("<h2>");
-	/*nothing to do*/}
+	}
 	public void endTable()   throws IOException {
-	/*nothing to do*/}
+		out.write("</html>\n");/*nothing to do*/}
 }

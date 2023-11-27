@@ -89,7 +89,7 @@ public class TableFactory
 	public static Table load( String name, File directory )
 													throws IOException
 	{
-		if( !(name.endsWith( ".csv" ) || name.endsWith( ".CSV" )) )
+		if( !(name.endsWith( ".csv" ) || name.endsWith( ".csv" )) )
 			throw new java.io.IOException(
 					 "Filename (" +name+ ") does not end in "
 					+"supported extension (.csv)" );
