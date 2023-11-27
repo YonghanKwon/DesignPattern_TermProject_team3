@@ -435,7 +435,7 @@ public final class Database { /*
 		CHAR		= tokens.create( "(var)?char"				),
 		DATE		= tokens.create( "date(\\s*\\(.*?\\))?"		),
 
-		SELECTIDENTIFIER = tokens.create("(min|max|avg)\\([a-zA-Z_0-9/\\\\:~*]+\\)"),
+		SELECTIDENTIFIER = tokens.create("(min|max)\\([a-zA-Z_0-9/\\\\:~*]+\\)"),
 		IDENTIFIER	= tokens.create( "[a-zA-Z_0-9/\\\\:~]+"		); //{=Database.lastToken}
 
 		private String expression; // SQL expression being parsed
@@ -816,11 +816,22 @@ public final class Database { /*
 				affectedRows = doDelete(tableName, expr());
 			} else if (in.matchAdvance(SELECT) != null) {
 				String distinct = in.matchAdvance(DISTINCT);
-				List columns = selectidList();
+				List<String> columns = selectidList();
+
+//				for(String str : columns) {
+//					System.out.println(str);
+//				}
 				
-				for(Object obj : columns) {
-					System.out.println((String)obj);
-				}
+				List<AggregateFunction> agg = null;
+				List<String> aggregateColumns = new ArrayList<>();
+				if (columns != null) {
+	                if (extractAggregate(columns, aggregateColumns)) {
+	                    agg = new ArrayList<>(aggregateColumns.size());
+	                    for(int i = 0; i < aggregateColumns.size(); i++) {
+	                    	agg.add(new AggregateFunction(columns.get(i), aggregateColumns.get(i)));
+	                    }
+	                }
+	            }
 
 				String into = null;
 				if (in.matchAdvance(INTO) != null)
@@ -831,6 +842,12 @@ public final class Database { /*
 
 				Expression where = (in.matchAdvance(WHERE) == null) ? null : expr();
 				Table result = doSelect(columns, into, requestedTableNames, where);
+				if(distinct != null) {
+					result.accept(new DistinctVisitor());
+				}
+				if(agg != null) {
+					result.accept(new AggregateVisitor(aggregateColumns));
+				}
 				return result;
 			} else {
 				error("Expected insert, create, drop, use, " + "update, delete or select");
@@ -845,28 +862,45 @@ public final class Database { /*
 		// Return a Collection holding the list of columns
 		// or null if a * was found.
 
-		private List selectidList() throws ParseFailure {
+		private List<String> selectidList() throws ParseFailure {
 			List<String> identifiers = null;
-			if (in.matchAdvance(STAR) == null) {
-				identifiers = new ArrayList<>();
-				String id;
-				while ((id = in.required(IDENTIFIER)) != null) {
-					if (in.match(SELECTIDENTIFIER)) {
-						id = in.matchAdvance(SELECTIDENTIFIER);
-					} else if (in.match(IDENTIFIER)) {
-						id = in.matchAdvance(IDENTIFIER);
-					} else {
-						break;
-					}
-					identifiers.add(id);
-					if (in.matchAdvance(COMMA) == null) {
-						break;
-					}
-				}
-			}
-			return identifiers;
+	        if (in.matchAdvance(STAR) == null) {
+	            identifiers = new ArrayList<>();
+	            String id;
+	            while (true) {
+	                if (in.match(SELECTIDENTIFIER)) {
+	                    id = in.matchAdvance(SELECTIDENTIFIER);
+	                } else if (in.match(IDENTIFIER)) {
+	                    id = in.matchAdvance(IDENTIFIER);
+	                } else {
+	                    break;
+	                }
+	                identifiers.add(id);
+	                if (in.matchAdvance(COMMA) == null)
+	                    break;
+	            }
+	        }
+	        return identifiers;
 		}
 
+		private boolean extractAggregate(List<String> columns, List<String> aggregateColumnList) {
+			boolean chk = false;
+			List<String> extractedAgg = new ArrayList<>();
+			for(String str : columns) {
+				if(str.contains("MAX") || str.contains("MIN")) {
+					String[] tmp = str.split("\\(|\\)");
+					System.out.println(tmp[0] + " " + tmp[1]);
+					extractedAgg.add(tmp[0]);
+					aggregateColumnList.add(tmp[1]);
+					chk = true;
+				}
+			}
+			columns.clear();
+			for(String str : extractedAgg) {
+				columns.add(str);
+			}
+			return chk;
+		}
 
 		private List idList() throws ParseFailure {
 			List identifiers = null;
