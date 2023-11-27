@@ -25,18 +25,20 @@ public class DistinctVisitor implements Visitor {
 					temp_arr[j] = rows.next().toString();
 				}
 
-				for (int k = 0; k < idx; k++) {
-					if (Arrays.deepEquals(temp_arr, Data[k])) {
-						flag = false;
-						break;
-					} else {
-						flag = true;
+					for(int k=0;k<idx;k++) {
+						if(Arrays.deepEquals(temp_arr,Data[k])) {
+							flag=false;							
+							break;
+						}
+						else {
+							flag=true;
+						}					
 					}
-				}
-
-				if (flag) {
-					for (int j = 0; j < colName.length; j++) {
-						Data[idx][j] = temp_arr[j];
+			
+				if(flag)
+				{	
+					for(int j=0;j<colName.length;j++) {
+						Data[idx][j]=temp_arr[j];
 					}
 					res.insert(temp_arr);
 					idx++;
