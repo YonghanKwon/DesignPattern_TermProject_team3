@@ -82,7 +82,8 @@ import com.holub.tools.ArrayIterator;
 	 * Return the index of the named column. Throw an IndexOutOfBoundsException if
 	 * the column doesn't exist.
 	 */
-	private int indexOf(String columnName) {
+	// private int indexOf(String columnName) { //modified to use in OrderVisitor
+	public int indexOf(String columnName) {
 		for (int i = 0; i < columnNames.length; ++i)
 			if (columnNames[i].equals(columnName))
 				return i;
