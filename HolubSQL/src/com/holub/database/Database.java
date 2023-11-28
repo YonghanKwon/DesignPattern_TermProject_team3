@@ -820,7 +820,6 @@ public final class Database { /*
 
 				List<String> columns = selectidList();
 
-
 				List<String> agg = null;
 				List<String> agg_tmp = new ArrayList<>();
 				if (columns != null) {
@@ -896,9 +895,11 @@ public final class Database { /*
 					chk = true;
 				}
 			}
-			columns.clear();
-			for (String str : extractedCol) {
-				columns.add(str);
+			if(chk) {
+				columns.clear();
+				for (String str : extractedCol) {
+					columns.add(str);
+				}
 			}
 			return chk;
 		}
