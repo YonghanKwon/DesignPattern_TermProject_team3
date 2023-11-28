@@ -889,7 +889,7 @@ public final class Database { /*
 			boolean chk = false;
 			List<String> extractedCol = new ArrayList<>();
 			for (String str : columns) {
-				if (str.contains("MAX") || str.contains("MIN") || str.contains("AVG")) {
+				if (str.toUpperCase().contains("MAX") || str.toUpperCase().contains("MIN") || str.toUpperCase().contains("AVG")) {
 					String[] tmp = str.split("\\(|\\)");
 					aggregateFunc.add(tmp[0]);
 					extractedCol.add(tmp[1]);
