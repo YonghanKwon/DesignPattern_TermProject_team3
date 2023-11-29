@@ -15,25 +15,25 @@ public class AggregateVisitor implements Visitor {
     public Table visit(ConcreteTable table) {
     	double[] tmp_res = new double[aggregateFunc.size()];
 		for(int i = 0; i < aggregateFunc.size(); i++) {
-			if (aggregateFunc.get(i).equals("MAX")) {
+			if (aggregateFunc.get(i).toUpperCase().equals("MAX")) {
 				tmp_res[i] = Double.MIN_VALUE;
 			}
-			if (aggregateFunc.get(i).equals("MIN")) {
+			if (aggregateFunc.get(i).toUpperCase().equals("MIN")) {
 				tmp_res[i] = Double.MAX_VALUE;
 			}
-			if (aggregateFunc.get(i).equals("AVG")) {
+			if (aggregateFunc.get(i).toUpperCase().equals("AVG")) {
 				tmp_res[i] = 0;
 			}
 		}
     	String[] cols = new String[aggregateFunc.size()];
     	for(int i = 0; i < aggregateFunc.size(); i++) {
-    		cols[i] = aggregateFunc.get(i) + "(" + aggregateFunc.get(i) + ")";
+    		cols[i] = aggregateFunc.get(i) + "(" + table.getcolumnNames()[i] + ")";
     	}
     	Table res = TableFactory.create(table.gettableName(), cols);
     	
     	ListIterator start = table.getrowSet().listIterator();
     	Iterator iter = start;
-    	while(iter.hasNext()){
+    	while(iter.hasNext()) {
     		Object row = iter.next();
 			StringBuilder key = new StringBuilder();
 			for (Object column : (Object[]) row) {
@@ -41,19 +41,19 @@ public class AggregateVisitor implements Visitor {
 			}
 			String[] row_tmp = key.toString().split(" ");
 			for (int i = 0; i < aggregateFunc.size(); i++) {
-				if (aggregateFunc.get(i).equals("MAX")) {
+				if (aggregateFunc.get(i).toUpperCase().equals("MAX")) {
 					tmp_res[i] = tmp_res[i] > Double.parseDouble(row_tmp[i]) ? tmp_res[i] : Double.parseDouble(row_tmp[i]);
 				}
-				if (aggregateFunc.get(i).equals("MIN")) {
+				if (aggregateFunc.get(i).toUpperCase().equals("MIN")) {
 					tmp_res[i] = tmp_res[i] < Double.parseDouble(row_tmp[i]) ? tmp_res[i] : Double.parseDouble(row_tmp[i]);
 				}
-				if (aggregateFunc.get(i).equals("AVG")) {
+				if (aggregateFunc.get(i).toUpperCase().equals("AVG")) {
 					tmp_res[i] += Double.parseDouble(row_tmp[i]);
 				}
     		}
     	}
     	for(int i = 0; i < aggregateFunc.size(); i++) {
-			if (aggregateFunc.get(i).equals("AVG")) {
+			if (aggregateFunc.get(i).toUpperCase().equals("AVG")) {
 				tmp_res[i] /= table.getrowSet().size();
 			}	
     	}
