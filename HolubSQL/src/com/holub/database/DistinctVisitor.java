@@ -6,20 +6,17 @@ import java.util.Arrays;
 import com.holub.tools.ArrayIterator;
 
 
+
 public class DistinctVisitor implements Visitor{
 
 	@Override
-	public Table visit(ConcreteTable table) {
-		
+	public Table visit(ConcreteTable table) {	
+
 		Table res = TableFactory.create(table.gettableName(),table.getcolumnNames());
-		
-		
-		
-		
-		
 		String[] colName = table.getcolumnNames();
 		String[] temp_arr=new String[colName.length];
 		String[][] Data = new String[table.getrowSet().size()][colName.length];
+		
 		int count=0;
 		boolean flag=true;
 		int idx=0;
@@ -56,6 +53,6 @@ public class DistinctVisitor implements Visitor{
 		return res;
 	}
 	public Table visit(UnmodifiableTable table) {
-		return table;
+		return table.extract();
 	}
 }
