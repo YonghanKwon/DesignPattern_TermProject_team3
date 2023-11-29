@@ -7,9 +7,10 @@ import java.util.ListIterator;
 import com.holub.tools.ArrayIterator;
 
 public class AggregateVisitor implements Visitor {
-	private List<String> aggregateFunc;
-	public AggregateVisitor(List<String> aggregateFunc) {
+	private List<String> aggregateFunc, alias;
+	public AggregateVisitor(List<String> aggregateFunc, List<String> alias) {
 		this.aggregateFunc = aggregateFunc;
+		this.alias = alias;
 	}
     @Override
     public Table visit(ConcreteTable table) {
@@ -26,9 +27,9 @@ public class AggregateVisitor implements Visitor {
 			}
 		}
     	String[] cols = new String[aggregateFunc.size()];
-    	for(int i = 0; i < aggregateFunc.size(); i++) {
-    		cols[i] = aggregateFunc.get(i) + "(" + table.getcolumnNames()[i] + ")";
-    	}
+		for(int i = 0; i < aggregateFunc.size(); i++) {
+			cols[i] = alias.get(i);
+		}
     	Table res = TableFactory.create(table.gettableName(), cols);
     	
     	ListIterator start = table.getrowSet().listIterator();
