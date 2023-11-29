@@ -19,7 +19,6 @@ public class AggregateVisitor implements Visitor {
 		int idx;
     	List<Double> tmp_res = new ArrayList<>();
 		for(String s : aggregateFunc.keySet()) {
-			System.out.println(s);
 			if (s.toUpperCase().equals("MAX")) {
 				tmp_res.add(Double.MIN_VALUE);
 			}
@@ -41,20 +40,13 @@ public class AggregateVisitor implements Visitor {
 			for (Object column : (Object[]) row) {
 				key.append(column + " ");
 			}
+			
 			String[] row_tmp = key.toString().split(" ");
 			idx = 0;
 			for(String s : aggregateFunc.keySet()) {
-				// if(aggregateFunc.get(s)) {
-				// 	if(! unique.contains(key.toString())) {
-				// 		row_tmp = key.toString().split(" ");
-				// 		unique.add(key.toString());
-				// 	} else {
-				// 		continue;
-				// 	}
-				// }
-				if(!(aggregateFunc.get(s) && unique.contains(key.toString()))) {
-					if(aggregateFunc.get(s) && !unique.contains(key.toString())) {
-						unique.add(key.toString());
+				if(!(aggregateFunc.get(s) && unique.contains(row_tmp[idx]))) {
+					if(aggregateFunc.get(s) && !unique.contains(row_tmp[idx])) {
+						unique.add(row_tmp[idx]);
 					}
 					if (s.toUpperCase().equals("MAX")) {
 						tmp_res.set(idx, tmp_res.get(idx) > Double.parseDouble(row_tmp[idx]) ? tmp_res.get(idx) : Double.parseDouble(row_tmp[idx]));

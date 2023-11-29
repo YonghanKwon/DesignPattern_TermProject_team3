@@ -438,7 +438,7 @@ public final class Database { /*
 		CHAR		= tokens.create( "(var)?char"				),
 		DATE		= tokens.create( "date(\\s*\\(.*?\\))?"		),
 
-		SELECTIDENTIFIER = tokens.create("(min|max|avg|sum|count)\\([a-zA-Z_0-9/\\\\:~*]+\\)"),
+		SELECTIDENTIFIER = tokens.create("(min|max|avg|sum|count)\\(.*?\\)"),
 		// SELECTIDENTIFIER = tokens.create("(min|max|avg|sum|count)\\(([a-zA-Z_0-9/\\\\:~*]+)\\)"),
 		IDENTIFIER	= tokens.create( "[a-zA-Z_0-9/\\\\:~]+"		); //{=Database.lastToken}
 
@@ -886,14 +886,20 @@ public final class Database { /*
 		}
 
 		private void extractAggregate(List<String> columns, LinkedHashMap<String, Boolean> agg) {
-			Pattern aggerate = Pattern.compile("(min|max|avg|sum|count)\\(([a-zA-Z_0-9/\\\\:~]+)\\)");
+			Pattern aggerate = Pattern.compile("(min|max|avg|sum|count)\\(.*?\\)");
 			List<String> extractedCol = new ArrayList<>();
 			boolean chk = false;
 			for (String str : columns) {
 				Matcher match = aggerate.matcher(str.toLowerCase());
 				if(match.find()) {
-					agg.put(match.group(1), false);
-					extractedCol.add(match.group(2));
+					String[] tmp = str.split("\\(|\\)|,");
+					if(tmp[1].contains(" ")) {
+						agg.put(tmp[0], true);
+						tmp[1] = tmp[1].split(" ")[1];
+					} else {
+						agg.put(tmp[0], false);
+					}
+					extractedCol.add(tmp[1]);
 					chk = true;
 				}
 			}
