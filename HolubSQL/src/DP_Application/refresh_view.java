@@ -6,7 +6,7 @@ import java.util.Observer;
 import com.holub.database.*;
 
 public class refresh_view implements Observer {
-	private Controller1 controller1 = Controller1.getInstance();
+	private ControllerVideo controllerVideo = ControllerVideo.getInstance();
 	private refreshed_table model;
 	private channel user;
 	

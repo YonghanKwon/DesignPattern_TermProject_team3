@@ -6,15 +6,15 @@ import java.util.Scanner;
 import com.holub.text.ParseFailure;
 
 public class Controller {
-	static Controller1 controller1;
-	static Controller2 controller2;
+	static ControllerVideo controllerVideo;
+	static ControllerChannel controllerChannel;
 	static Controller3 controller3;
 	private channel user;
 	private static Controller uniqueInstance = new Controller(); 
 	
 	private Controller() {
-		controller1=Controller1.getInstance();
-		controller2=Controller2.getInstance();
+		controllerVideo=ControllerVideo.getInstance();
+		controllerChannel=ControllerChannel.getInstance();
 		controller3=Controller3.getInstance();
 		
 	}
@@ -24,8 +24,8 @@ public class Controller {
 	}
 	public void setUser(channel user) {
 		this.user=user;
-		controller1.setUser(user);
-		controller2.setUser(user);
+		controllerVideo.setUser(user);
+		controllerChannel.setUser(user);
 		controller3.setUser(user);
 	}
 
@@ -41,9 +41,9 @@ public class Controller {
 			if(input==48)
 				break;
 			if(input>=49&&input<=51) 
-				controller1.run(input);
-			else if(input==51)
-				controller2.run();
+				controllerVideo.run(input);
+			else if(input==52)
+				controllerChannel.run();
 			else controller3.run();
 		}
 	}

@@ -73,7 +73,7 @@ public class refreshed_table extends Observable{
 			int temp=random.nextInt(size_nonsub);
 
 			
-			Iterator i=((ConcreteTable)result_video).getrowSet().iterator(); //한줄 전체
+			Iterator i=((ConcreteTable)result_video).getrowSet().iterator();
 			
 			
 			

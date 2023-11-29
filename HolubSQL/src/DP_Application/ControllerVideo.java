@@ -5,14 +5,14 @@ import java.util.Scanner;
 
 import com.holub.text.ParseFailure;
 
-public class Controller1 {
-	private static Controller1 uniqueInstance = new Controller1(); 
+public class ControllerVideo {
+	private static ControllerVideo uniqueInstance = new ControllerVideo(); 
 	private refresh_view refresh_view;
 	private refreshed_table refreshed_model;
-	private Controller1() {}
+	private ControllerVideo() {}
 	private channel user;
 	
-	public static Controller1 getInstance() {
+	public static ControllerVideo getInstance() {
 		return uniqueInstance;
 	}
 	public void setUser(channel user) {
@@ -31,7 +31,6 @@ public class Controller1 {
 		if(state==49)
 		{
 			input='r';
-			int a=10000;
 			while(input=='r') {
 				init();
 				refreshed_model.makeTable();
@@ -49,11 +48,11 @@ public class Controller1 {
 		else if(state==50) {
 			System.out.println("watch record");
 
-			}
+		}
 		else if(state==51) {
 			System.out.println("upload video");
 
-			}
+		}
 	}
 }
 
