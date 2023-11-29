@@ -56,6 +56,6 @@ public class DistinctVisitor implements Visitor{
 		return res;
 	}
 	public Table visit(UnmodifiableTable table) {
-		return table;
+		return table.extract();
 	}
 }

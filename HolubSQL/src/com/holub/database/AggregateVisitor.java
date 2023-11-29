@@ -1,37 +1,38 @@
 package com.holub.database;
 
+import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.Iterator;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.ListIterator;
 
-import com.holub.tools.ArrayIterator;
-
 public class AggregateVisitor implements Visitor {
-	private List<String> aggregateFunc, alias;
-	public AggregateVisitor(List<String> aggregateFunc, List<String> alias) {
+	private LinkedHashMap<String, Boolean> aggregateFunc;
+	private List<String> alias;
+	public AggregateVisitor(LinkedHashMap<String, Boolean> aggregateFunc, List<String> alias) {
 		this.aggregateFunc = aggregateFunc;
 		this.alias = alias;
 	}
     @Override
     public Table visit(ConcreteTable table) {
-    	double[] tmp_res = new double[aggregateFunc.size()];
-		for(int i = 0; i < aggregateFunc.size(); i++) {
-			if (aggregateFunc.get(i).toUpperCase().equals("MAX")) {
-				tmp_res[i] = Double.MIN_VALUE;
+		int idx;
+    	List<Double> tmp_res = new ArrayList<>();
+		for(String s : aggregateFunc.keySet()) {
+			System.out.println(s);
+			if (s.toUpperCase().equals("MAX")) {
+				tmp_res.add(Double.MIN_VALUE);
 			}
-			if (aggregateFunc.get(i).toUpperCase().equals("MIN")) {
-				tmp_res[i] = Double.MAX_VALUE;
+			if (s.toUpperCase().equals("MIN")) {
+				tmp_res.add(Double.MAX_VALUE);
 			}
-			if (aggregateFunc.get(i).toUpperCase().equals("AVG")) {
-				tmp_res[i] = 0;
+			if (s.toUpperCase().equals("AVG") || s.toUpperCase().equals("SUM") || s.toUpperCase().equals("COUNT")) {
+				tmp_res.add(0.0);
 			}
 		}
-    	String[] cols = new String[aggregateFunc.size()];
-		for(int i = 0; i < aggregateFunc.size(); i++) {
-			cols[i] = alias.get(i);
-		}
-    	Table res = TableFactory.create(table.gettableName(), cols);
+		Table res = TableFactory.create(table.gettableName(), alias.toArray(new String[alias.size()]));
     	
+		HashSet<String> unique = new HashSet<>();
     	ListIterator start = table.getrowSet().listIterator();
     	Iterator iter = start;
     	while(iter.hasNext()) {
@@ -41,25 +42,47 @@ public class AggregateVisitor implements Visitor {
 				key.append(column + " ");
 			}
 			String[] row_tmp = key.toString().split(" ");
-			for (int i = 0; i < aggregateFunc.size(); i++) {
-				if (aggregateFunc.get(i).toUpperCase().equals("MAX")) {
-					tmp_res[i] = tmp_res[i] > Double.parseDouble(row_tmp[i]) ? tmp_res[i] : Double.parseDouble(row_tmp[i]);
+			idx = 0;
+			for(String s : aggregateFunc.keySet()) {
+				// if(aggregateFunc.get(s)) {
+				// 	if(! unique.contains(key.toString())) {
+				// 		row_tmp = key.toString().split(" ");
+				// 		unique.add(key.toString());
+				// 	} else {
+				// 		continue;
+				// 	}
+				// }
+				if(!(aggregateFunc.get(s) && unique.contains(key.toString()))) {
+					if(aggregateFunc.get(s) && !unique.contains(key.toString())) {
+						unique.add(key.toString());
+					}
+					if (s.toUpperCase().equals("MAX")) {
+						tmp_res.set(idx, tmp_res.get(idx) > Double.parseDouble(row_tmp[idx]) ? tmp_res.get(idx) : Double.parseDouble(row_tmp[idx]));
+					}
+					if (s.toUpperCase().equals("MIN")) {
+						tmp_res.set(idx, tmp_res.get(idx) < Double.parseDouble(row_tmp[idx]) ? tmp_res.get(idx) : Double.parseDouble(row_tmp[idx]));
+					}
+					if (s.toUpperCase().equals("AVG") || s.toUpperCase().equals("SUM")) {
+						tmp_res.set(idx, tmp_res.get(idx) + Double.parseDouble(row_tmp[idx]));
+					}
+					if (s.toUpperCase().equals("COUNT")) {
+						tmp_res.set(idx, tmp_res.get(idx) + 1);
+					}
 				}
-				if (aggregateFunc.get(i).toUpperCase().equals("MIN")) {
-					tmp_res[i] = tmp_res[i] < Double.parseDouble(row_tmp[i]) ? tmp_res[i] : Double.parseDouble(row_tmp[i]);
-				}
-				if (aggregateFunc.get(i).toUpperCase().equals("AVG")) {
-					tmp_res[i] += Double.parseDouble(row_tmp[i]);
-				}
-    		}
+				idx++;
+			}
     	}
+		idx = 0;
+		for(String s : aggregateFunc.keySet()) {
+			if (s.toUpperCase().equals("AVG")) {
+				tmp_res.set(idx, tmp_res.get(idx) / table.getrowSet().size());
+			}
+			idx++;
+		}
+
+		String[] cols = new String[aggregateFunc.size()];
     	for(int i = 0; i < aggregateFunc.size(); i++) {
-			if (aggregateFunc.get(i).toUpperCase().equals("AVG")) {
-				tmp_res[i] /= table.getrowSet().size();
-			}	
-    	}
-    	for(int i = 0; i < aggregateFunc.size(); i++) {
-    		cols[i] = String.format("%.2f", tmp_res[i]);
+    		cols[i] = String.format("%.2f", tmp_res.get(i));
     	}
     	res.insert(cols);
     	
