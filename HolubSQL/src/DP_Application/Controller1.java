@@ -32,10 +32,11 @@ public class Controller1 {
 		if(state==49)
 		{
 			input='r';
+			int a=10000;
 			while(input=='r') {
 				init();
 				refreshed_model.makeTable();
-
+				
 				input=sc.next().charAt(0);
 				if(input>=48 && input <=59)
 				{

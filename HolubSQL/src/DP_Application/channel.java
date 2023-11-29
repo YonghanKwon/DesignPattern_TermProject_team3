@@ -31,7 +31,7 @@ public class channel {
 			video_num=0;
 			premium=false;
 			
-			db.execute("insert into Channel (name,sub_num,video_num,premium) values (\""+name+"\",\""+sub_num+"\",\""+video_num+"\",\""+premium+"\")");
+			db.execute("insert into Channel (name,sub_num,vid_num,prem) values (\""+name+"\",\""+sub_num+"\",\""+video_num+"\",\""+premium+"\")");
 			db.execute("dump");	//데이터 저장 위치.
 		}
 		else {//data load
