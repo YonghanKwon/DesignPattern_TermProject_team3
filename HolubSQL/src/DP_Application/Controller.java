@@ -1,12 +1,15 @@
 package DP_Application;
 
+import java.io.IOException;
 import java.util.Scanner;
+
+import com.holub.text.ParseFailure;
 
 public class Controller {
 	static Controller1 controller1;
 	static Controller2 controller2;
 	static Controller3 controller3;
-	channel user;
+	private channel user;
 	private static Controller uniqueInstance = new Controller(); 
 	
 	private Controller() {
@@ -21,11 +24,14 @@ public class Controller {
 	}
 	public void setUser(channel user) {
 		this.user=user;
+		controller1.setUser(user);
+		controller2.setUser(user);
+		controller3.setUser(user);
 	}
 
-	public void run() {
+	public void run() throws IOException, ParseFailure {
 		Scanner sc = new Scanner(System.in);
-		
+				
 		char input;
 		while(true) {
 		

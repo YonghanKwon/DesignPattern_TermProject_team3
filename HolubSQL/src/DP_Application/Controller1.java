@@ -1,12 +1,16 @@
 package DP_Application;
 
+import java.io.IOException;
 import java.util.Scanner;
+
+import com.holub.text.ParseFailure;
 
 public class Controller1 {
 	private static Controller1 uniqueInstance = new Controller1(); 
-	
+	private refresh_view refresh_view;
+	private refreshed_table refreshed_model;
 	private Controller1() {}
-	channel user;
+	private channel user;
 	
 	public static Controller1 getInstance() {
 		return uniqueInstance;
@@ -14,26 +18,32 @@ public class Controller1 {
 	public void setUser(channel user) {
 		this.user=user;
 	}
-	
-	/*
-	refresh_view refresh = new refresh_view();	//view
-	refreshed_table refresh_model = new refreshed_table();
-	refresh_model.addObserver(refresh);
-	*/
-	
-	public void run(char state) {
+	public void init() throws IOException {
+		refreshed_model=new refreshed_table(user);
+		refresh_view=new refresh_view(user, refreshed_model);
+		refreshed_model.addObserver(refresh_view);
+		//refreshed_model.addObserver(new refresh_view(user, refreshed_model));
+		//또는 입출력용의 view를 하나 더 만들고 컨트롤러가 뷰를 가지고 있으면서, 필요할때마다 뷰를 부름
+	}
+		
+	public void run(char state) throws IOException, ParseFailure {
 		Scanner sc = new Scanner(System.in);
 		char input;		
 		if(state==49)
-		{	input='r';
+		{
+			input='r';
 			while(input=='r') {
-				System.out.println("refresh");
-				if(input>=48 && input <=59)
-					break;
-				
+				init();
+				refreshed_model.makeTable();
+
 				input=sc.next().charAt(0);
+				if(input>=48 && input <=59)
+				{
+
+					System.out.println("watch");					
+					break;
+				}
 			}
-			System.out.println("watch" + input );
 
 		}
 		else if(state==50) {

@@ -4,12 +4,12 @@ import java.io.IOException;
 import java.util.Scanner;
 
 import com.holub.database.*;
+import com.holub.text.ParseFailure;
 
 public class log_in {
 	public channel user;
-	public Database db;
 	static Controller controller;
-	public log_in(String name) throws IOException {
+	public log_in(String name) throws IOException, ParseFailure {
 		this.user=new channel(name);
 		controller=Controller.getInstance();
 		controller.setUser(user);
@@ -18,7 +18,7 @@ public class log_in {
 			
 		
 	}
-	public static void main(String[] args) throws IOException {
+	public static void main(String[] args) throws IOException, ParseFailure {
 		System.out.println("Enter name:");
 		Scanner sc = new Scanner(System.in);
 		String name;
