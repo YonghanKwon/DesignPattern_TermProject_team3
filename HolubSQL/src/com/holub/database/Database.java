@@ -398,6 +398,7 @@ public final class Database { /*
 		STAR		= tokens.create( "'*" 		),
 		SLASH		= tokens.create( "'/" 		),
 		AND			= tokens.create( "'AND"	),
+		AS			= tokens.create( "'AS"		),
 		BEGIN		= tokens.create( "'BEGIN"	),
 		BY			= tokens.create( "'BY"		),
 		COMMIT		= tokens.create( "'COMMIT"	),
@@ -821,7 +822,8 @@ public final class Database { /*
 			} else if (in.matchAdvance(SELECT) != null) {
 				String distinct = in.matchAdvance(DISTINCT);
 
-				List<String> columns = selectidList();
+				List<String> columns, alias = new ArrayList<>();
+				columns = selectidList(alias);
 
 				List<String> agg = null;
 				List<String> agg_tmp = new ArrayList<>();
@@ -861,7 +863,7 @@ public final class Database { /*
 					result = result.accept(new DistinctVisitor()).accept(new DistinctVisitor());
 				}
 				if (agg != null) {
-					result = result.accept(new AggregateVisitor(agg)).accept(new AggregateVisitor(agg));
+					result = result.accept(new AggregateVisitor(agg, alias)).accept(new AggregateVisitor(agg, alias));
 				}
 				if (order.size() > 0) {
 					result = result.accept(new OrderVisitor(order)).accept(new OrderVisitor(order));
@@ -881,7 +883,7 @@ public final class Database { /*
 		// Return a Collection holding the list of columns
 		// or null if a * was found.
 
-		private List<String> selectidList() throws ParseFailure {
+		private List<String> selectidList(List<String> alias) throws ParseFailure {
 			List<String> identifiers = null;
 			if (in.matchAdvance(STAR) == null) {
 				identifiers = new ArrayList<>();
@@ -894,6 +896,7 @@ public final class Database { /*
 					} else {
 						break;
 					}
+					alias.add(in.matchAdvance(AS) != null ? in.matchAdvance(IDENTIFIER) : id);
 					identifiers.add(id);
 					if (in.matchAdvance(COMMA) == null)
 						break;
