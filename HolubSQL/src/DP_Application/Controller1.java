@@ -23,7 +23,6 @@ public class Controller1 {
 		refresh_view=new refresh_view(user, refreshed_model);
 		refreshed_model.addObserver(refresh_view);
 		//refreshed_model.addObserver(new refresh_view(user, refreshed_model));
-		//또는 입출력용의 view를 하나 더 만들고 컨트롤러가 뷰를 가지고 있으면서, 필요할때마다 뷰를 부름
 	}
 		
 	public void run(char state) throws IOException, ParseFailure {

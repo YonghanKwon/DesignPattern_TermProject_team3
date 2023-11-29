@@ -32,10 +32,10 @@ public class channel {
 			premium=false;
 			
 			db.execute("insert into Channel (name,sub_num,vid_num,prem) values (\""+name+"\",\""+sub_num+"\",\""+video_num+"\",\""+premium+"\")");
-			db.execute("dump");	//데이터 저장 위치.
+			db.execute("dump");	
 		}
 		else {//data load
-			Iterator rows=new ArrayIterator((Object[])((ConcreteTable)result).getrowSet().iterator().next()); //한줄 전체
+			Iterator rows=new ArrayIterator((Object[])((ConcreteTable)result).getrowSet().iterator().next()); 
 			
 			rows.next().toString();		//name
 			this.sub_num=Integer.parseInt(rows.next().toString());

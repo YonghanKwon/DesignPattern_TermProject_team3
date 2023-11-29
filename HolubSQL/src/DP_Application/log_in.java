@@ -13,9 +13,6 @@ public class log_in {
 		this.user=new channel(name);
 		controller=Controller.getInstance();
 		controller.setUser(user);
-
-		//이름 겹치는지 확인하고 겹치면 db에 추가
-			
 		
 	}
 	public static void main(String[] args) throws IOException, ParseFailure {

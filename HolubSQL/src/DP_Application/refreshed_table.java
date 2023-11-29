@@ -16,7 +16,7 @@ public class refreshed_table extends Observable{
 		this.user=user;
 	}
 	public void makeTable() throws IOException, ParseFailure {
-		Random random = new Random(); //난수 생성
+		Random random = new Random(); 
 		Table result_video;
 		Table result_vie_sub;
 		int size_nonsub;
