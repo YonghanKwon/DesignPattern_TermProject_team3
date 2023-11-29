@@ -18,8 +18,10 @@ public class channel {
 	private boolean premium;
 	public channel(String name) throws IOException, ParseFailure {
 		this.name=name;
-
-		Database db = new Database("C:/DP2023"); 
+		System.out.println(name);
+		
+		Database db = new Database("C:/DP2023");
+		
 		String query="select DISTINCT * from Channel where name=\""+name+"\"";
 		Table result = db.execute(query);
 		if( ((ConcreteTable)result).getrowSet().size() == 0) {//data insert
@@ -40,6 +42,7 @@ public class channel {
 			this.video_num=Integer.parseInt(rows.next().toString());
 			this.premium=Boolean.parseBoolean((rows.next().toString()));
 		}
+		
 		//if channel table doesn't have name, then insert.
 		
 	}

@@ -18,8 +18,7 @@ public class refresh_view implements Observer {
 	@Override
 	public void update(Observable o, Object arg) {
 		System.out.println(model.getResultTable());
-		
-		
+				
 	}
 
 
