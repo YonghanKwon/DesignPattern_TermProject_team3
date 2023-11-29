@@ -27,6 +27,8 @@
 package com.holub.database;
 
 import java.util.*;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 import java.io.*;
 import java.text.NumberFormat;
 import java.net.URI;
@@ -439,7 +441,8 @@ public final class Database { /*
 		CHAR		= tokens.create( "(var)?char"				),
 		DATE		= tokens.create( "date(\\s*\\(.*?\\))?"		),
 
-		SELECTIDENTIFIER = tokens.create("(min|max|avg)\\([a-zA-Z_0-9/\\\\:~*]+\\)"),
+		SELECTIDENTIFIER = tokens.create("(min|max|avg|sum|count)\\(.*?\\)"),
+		// SELECTIDENTIFIER = tokens.create("(min|max|avg|sum|count)\\(([a-zA-Z_0-9/\\\\:~*]+)\\)"),
 		IDENTIFIER	= tokens.create( "[a-zA-Z_0-9/\\\\:~]+"		); //{=Database.lastToken}
 
 		private String expression; // SQL expression being parsed
@@ -822,18 +825,13 @@ public final class Database { /*
 			} else if (in.matchAdvance(SELECT) != null) {
 				String distinct = in.matchAdvance(DISTINCT);
 
-				List<String> columns, alias = new ArrayList<>();
+				List<String> columns, alias = new ArrayList<>(); 
 				columns = selectidList(alias);
 
-				List<String> agg = null;
-				List<String> agg_tmp = new ArrayList<>();
+				LinkedHashMap<String, Boolean> agg = new LinkedHashMap<>();
+				
 				if (columns != null) {
-					if (extractAggregate(columns, agg_tmp)) {
-						agg = new ArrayList<>(agg_tmp.size());
-						for (int i = 0; i < agg_tmp.size(); i++) {
-							agg.add(agg_tmp.get(i));
-						}
-					}
+					extractAggregate(columns, agg);
 				}
 
 				String into = null;
@@ -862,7 +860,7 @@ public final class Database { /*
 				if (distinct != null) {
 					result = result.accept(new DistinctVisitor()).accept(new DistinctVisitor());
 				}
-				if (agg != null) {
+				if (agg.size() > 0) {
 					result = result.accept(new AggregateVisitor(agg, alias)).accept(new AggregateVisitor(agg, alias));
 				}
 				if (order.size() > 0) {
@@ -905,13 +903,20 @@ public final class Database { /*
 			return identifiers;
 		}
 
-		private boolean extractAggregate(List<String> columns, List<String> aggregateFunc) {
-			boolean chk = false;
+		private void extractAggregate(List<String> columns, LinkedHashMap<String, Boolean> agg) {
+			Pattern aggerate = Pattern.compile("(min|max|avg|sum|count)\\(.*?\\)");
 			List<String> extractedCol = new ArrayList<>();
+			boolean chk = false;
 			for (String str : columns) {
-				if (str.toUpperCase().contains("MAX") || str.toUpperCase().contains("MIN") || str.toUpperCase().contains("AVG")) {
-					String[] tmp = str.split("\\(|\\)");
-					aggregateFunc.add(tmp[0]);
+				Matcher match = aggerate.matcher(str.toLowerCase());
+				if(match.find()) {
+					String[] tmp = str.split("\\(|\\)|,");
+					if(tmp[1].contains(" ")) {
+						agg.put(tmp[0], true);
+						tmp[1] = tmp[1].split(" ")[1];
+					} else {
+						agg.put(tmp[0], false);
+					}
 					extractedCol.add(tmp[1]);
 					chk = true;
 				}
@@ -922,7 +927,6 @@ public final class Database { /*
 					columns.add(str);
 				}
 			}
-			return chk;
 		}
 
 		private List idList() throws ParseFailure {
