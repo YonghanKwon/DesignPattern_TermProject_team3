@@ -397,30 +397,33 @@ public final class Database { /*
 		DOT			= tokens.create( "'." 		),
 		STAR		= tokens.create( "'*" 		),
 		SLASH		= tokens.create( "'/" 		),
-		AND			= tokens.create( "'AND"		),
+		AND			= tokens.create( "'AND"	),
 		BEGIN		= tokens.create( "'BEGIN"	),
+		BY			= tokens.create( "'BY"		),
 		COMMIT		= tokens.create( "'COMMIT"	),
 		CREATE		= tokens.create( "'CREATE"	),
 		DATABASE	= tokens.create( "'DATABASE"),
 		DELETE		= tokens.create( "'DELETE"	),
+		DESC		= tokens.create( "'DESC"	),
 		DISTINCT	= tokens.create( "'DISTINCT"),
 		DROP		= tokens.create( "'DROP"	),
 		DUMP		= tokens.create( "'DUMP"	),
 		FROM		= tokens.create( "'FROM"	),
 		INSERT 		= tokens.create( "'INSERT"	),
 		INTO 		= tokens.create( "'INTO"	),
-		KEY 		= tokens.create( "'KEY"		),
+		KEY 		= tokens.create( "'KEY"	),
 		LIKE		= tokens.create( "'LIKE"	),
-		NOT 		= tokens.create( "'NOT"		),
+		NOT 		= tokens.create( "'NOT"	),
 		NULL		= tokens.create( "'NULL"	),
 		OR			= tokens.create( "'OR"		),
-		PRIMARY		= tokens.create( "'PRIMARY"	),
+		ORDER		= tokens.create( "'ORDER"	),
+		PRIMARY		= tokens.create( "'PRIMARY"),
 		ROLLBACK	= tokens.create( "'ROLLBACK"),
 		SELECT		= tokens.create( "'SELECT"	),
-		SET			= tokens.create( "'SET"		),
+		SET			= tokens.create( "'SET"	),
 		TABLE		= tokens.create( "'TABLE"	),
 		UPDATE		= tokens.create( "'UPDATE"	),
-		USE			= tokens.create( "'USE"		),
+		USE			= tokens.create( "'USE"	),
 		VALUES 		= tokens.create( "'VALUES"	),
 		WHERE		= tokens.create( "'WHERE"	),
 
@@ -840,6 +843,18 @@ public final class Database { /*
 
 				Expression where = (in.matchAdvance(WHERE) == null) ? null : expr();
 
+				LinkedHashMap<String, Boolean> order = new LinkedHashMap<>();
+				if(in.matchAdvance(ORDER) != null) {
+					in.required(BY);
+					while(true) {
+						// String col = in.required(IDENTIFIER);
+						order.put(in.required(IDENTIFIER), in.matchAdvance(DESC) != null ? true : false);
+						if(in.matchAdvance(COMMA) == null) {
+							break;
+						}
+					}
+				}
+
 				Table result = doSelect(columns, into, requestedTableNames, where);
 
 				if (distinct != null) {
@@ -847,6 +862,9 @@ public final class Database { /*
 				}
 				if (agg != null) {
 					result = result.accept(new AggregateVisitor(agg)).accept(new AggregateVisitor(agg));
+				}
+				if (order.size() > 0) {
+					result = result.accept(new OrderVisitor(order)).accept(new OrderVisitor(order));
 				}
 				return result;
 			} else {
