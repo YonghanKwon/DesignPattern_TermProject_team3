@@ -18,13 +18,10 @@ public class ControllerChannel {
 	public void setUser(channel user) {
 		this.user=user;
 	}
-	public void init() throws IOException {
+	public void run() throws IOException, ParseFailure {
 		subRecord_table = new subRecord_table(user);
 		subRecord_view = new subRecord_view(user, subRecord_table);
 		subRecord_table.addObserver(subRecord_view);
-	}
-	public void run() throws IOException, ParseFailure {
-		init();
 		subRecord_table.makeTable();
 		subRecord_view.getMembership();
 	}
