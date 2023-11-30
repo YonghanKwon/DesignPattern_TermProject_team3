@@ -7,11 +7,12 @@ import com.holub.database.*;
 import com.holub.text.ParseFailure;
 
 public class log_in {
+	Membership membership = new Membership();
 	public channel user;
 	static Controller controller;
 	public log_in(String name) throws IOException, ParseFailure {
-		this.user=new channel(name);
-		controller=Controller.getInstance();
+		this.user = new channel(membership, name);
+		controller = Controller.getInstance();
 		controller.setUser(user);
 		
 	}

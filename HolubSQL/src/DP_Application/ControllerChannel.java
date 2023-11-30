@@ -26,6 +26,7 @@ public class ControllerChannel {
 	public void run() throws IOException, ParseFailure {
 		init();
 		subRecord_table.makeTable();
+		subRecord_view.getMembership();
 	}
 }
 /*

@@ -9,16 +9,16 @@ import com.holub.text.ParseFailure;
 import com.holub.tools.ArrayIterator;
 
 public class channel {
-
+	Membership membership;
 	private Table channel;
 	
 	private String name;
 	private int sub_num;
 	private int video_num;
 	private boolean premium;
-	public channel(String name) throws IOException, ParseFailure {
-		this.name=name;
-		System.out.println(name);
+	public channel(Membership membership, String name) throws IOException, ParseFailure {
+		this.membership = membership;
+		this.name = name;
 		
 		Database db = new Database("C:/DP2023");
 		
@@ -49,6 +49,8 @@ public class channel {
 	public String getName() {
 		return name;
 	}
-
+	public void mediate(String target) throws IOException, ParseFailure {
+		new Membership().mediate(target, this.getName());
+	}
 
 }
