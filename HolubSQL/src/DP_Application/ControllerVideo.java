@@ -28,18 +28,16 @@ public class ControllerVideo {
 	public void run(char state) throws IOException, ParseFailure {
 		Scanner sc = new Scanner(System.in);
 		char input;		
-		if(state==49)
-		{
+		if(state==49) {
 			input='r';
 			while(input=='r') {
 				init();
 				refreshed_model.makeTable();
 				
 				input=sc.next().charAt(0);
-				if(input>=48 && input <=59)
-				{
-
-					System.out.println("watch");					
+				if(input>=48 && input <=59) {
+					user.watch(user, refreshed_model.getVideo(input - 48));
+					// System.out.println("watch");
 					break;
 				}
 			}
