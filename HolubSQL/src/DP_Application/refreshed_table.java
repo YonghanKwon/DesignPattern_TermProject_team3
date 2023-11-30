@@ -101,4 +101,35 @@ public class refreshed_table extends Observable{
 	public Table getResultTable() {
 		return result;
 	}
+	
+	public Table getVideo(int index) {
+		Table result_video;
+		result_video=TableFactory.create("seleted_video",((ConcreteTable)result).getcolumnNames());
+		
+				
+		String[] temp_arr=new String[((ConcreteTable)result).getcolumnNames().length];
+
+		boolean flag=true;
+		int count=0;
+		
+						
+		Iterator i=((ConcreteTable)result).getrowSet().iterator();
+
+			
+		while(i.hasNext()&&count<=index) {
+			Iterator rows_sub = new ArrayIterator((Object[])i.next());
+				
+			int idx=0;
+			while(rows_sub.hasNext()&&count==index) {
+				temp_arr[idx]=rows_sub.next().toString();
+								
+				idx++;
+			}	
+			count++;
+		}
+			
+		result_video.insert(temp_arr);
+		
+		return result_video;
+	}
 }
