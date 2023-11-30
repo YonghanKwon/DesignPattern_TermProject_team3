@@ -14,6 +14,7 @@ public class OrdinaryState implements State {
         String[] tmp_table = video.toString().split("\n");
         String[] vid = tmp_table[3].split("\\t");
         String[] time = vid[2].split(":");
+        Scanner sc = new Scanner(System.in);
         int vidTime = Integer.parseInt(time[0]) * 60 + Integer.parseInt(time[1]);
         for(int i = 0; i < vidTime; i += 10) {
             try {
@@ -25,12 +26,13 @@ public class OrdinaryState implements State {
                 Thread.sleep(50);
             } catch (Exception e) {}
         }
-        char like;
+        char[] like = new char[2];
         while(true) {
             System.out.println("Do you like this video?(Y/N)?");
-            Scanner sc = new Scanner(System.in);
-            like = sc.next().toLowerCase().charAt(0);
-            if(like == 'y' || like == 'n') {
+            like[0] = sc.next().toLowerCase().charAt(0);
+            System.out.println("Do you like to subscribe this channel?(Y/N)?");
+            like[1] = sc.next().toLowerCase().charAt(0);
+            if((like[0] == 'y' || like[0] == 'n') && (like[1] == 'y' || like[1] == 'n')) {
                 break;
             }
             System.out.println("Please input Y(y), N(n)\n");
@@ -38,7 +40,10 @@ public class OrdinaryState implements State {
         
 		Database db = new Database("C:/DP2023");
 		String date = LocalDate.now().toString().replace("-", "");
-		db.execute("insert into ViewRecord values (\"" + channel.getName() + "\",\"" + vid[0] + "\",\"" + date + "\",\"" + ((like == 'y') ? "true" : "false") +"\")");
+		db.execute("insert into ViewRecord values (\"" + channel.getName() + "\",\"" + vid[0] + "\",\"" + date + "\",\"" + ((like[0] == 'y') ? "true" : "false") +"\")");
+        if((like[1] == 'y')) {
+            db.execute("insert into Subscribe values (\"" + channel.getName() + "\",\"" + vid[1] + "\",\"" + "false" +"\")");
+        }
 		db.execute("dump");
     }
 }
