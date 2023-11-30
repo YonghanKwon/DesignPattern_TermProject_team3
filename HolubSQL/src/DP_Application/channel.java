@@ -2,7 +2,6 @@ package DP_Application;
 
 import java.io.IOException;
 import java.util.Iterator;
-import java.util.Observable;
 
 import com.holub.database.*;
 import com.holub.text.ParseFailure;
@@ -13,7 +12,6 @@ public class channel {
 	State premiumState;
 	State ordinaryState;
 	State state;
-	private Table channel;
 	
 	private String name;
 	private int sub_num;
@@ -42,7 +40,6 @@ public class channel {
 			rows.next().toString();		//name
 			this.sub_num=Integer.parseInt(rows.next().toString());
 			this.video_num=Integer.parseInt(rows.next().toString());
-			// this.premium=Boolean.parseBoolean((rows.next().toString()));
 			state = Boolean.parseBoolean((rows.next().toString())) ? premiumState : ordinaryState;
 		}
 		

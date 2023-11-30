@@ -28,7 +28,7 @@ public class ControllerVideo {
 			input='r';
 			while(input=='r') {
 				refreshed_model=new refreshed_table(user);
-				refresh_view=new refresh_view(user, refreshed_model);
+				refresh_view=new refresh_view(refreshed_model);
 				refreshed_model.addObserver(refresh_view);
 				refreshed_model.makeTable();
 				
@@ -53,21 +53,3 @@ public class ControllerVideo {
 		}
 	}
 }
-
-/*
-public void log_in() {
-	
-}
-public void refresh() {
-	
-}
-public void watch() {
-	
-}
-public void print_viewRecord() {
-	
-}
-public void video_upload() {
-	
-}
-*/

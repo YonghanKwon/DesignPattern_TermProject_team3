@@ -3,7 +3,6 @@ package DP_Application;
 import java.io.IOException;
 import java.util.Scanner;
 
-import com.holub.database.*;
 import com.holub.text.ParseFailure;
 
 public class log_in {

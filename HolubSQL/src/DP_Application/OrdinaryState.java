@@ -43,7 +43,13 @@ public class OrdinaryState implements State {
 		db.execute("insert into ViewRecord values (\"" + channel.getName() + "\",\"" + vid[0] + "\",\"" + date + "\",\"" + ((like[0] == 'y') ? "true" : "false") +"\")");
         if((like[1] == 'y')) {
             db.execute("insert into Subscribe values (\"" + channel.getName() + "\",\"" + vid[1] + "\",\"" + "false" +"\")");
+
+            String query = "select sub_num from Channel where name = \"" + vid[1] + "\"";
+            int curr_sub = Integer.parseInt(db.execute(query).toString().split("\n")[3].split("\t")[0]) + 1;
+            db.execute("update Channel set sub_num = \"" + curr_sub + "\" where name = \"" + vid[1] + "\"");
         }
+        int user_video_num = Integer.parseInt(vid[0]) + 1;
+        db.execute("update Video set vid_num = \"" + user_video_num + "\" where name = \"" + vid[1] + "\"");
 		db.execute("dump");
     }
 }

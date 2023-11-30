@@ -26,11 +26,3 @@ public class ControllerChannel {
 		subRecord_view.getMembership();
 	}
 }
-/*
-public subscribe() {
-
-}
-public print_subscribe() {
-	
-}
-*/
