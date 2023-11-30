@@ -34,7 +34,7 @@ public class PremiumState implements State {
             System.out.println("Please input Y(y), N(n)\n");
         }
         
-		Database db = new Database("C:/DP2023");
+		Database db = new Database("C:/dp2023");
 		String date = LocalDate.now().toString().replace("-", "");
 		db.execute("insert into ViewRecord values (\"" + channel.getName() + "\",\"" + vid[0] + "\",\"" + date + "\",\"" + ((like[0] == 'y') ? "true" : "false") +"\")");
         if((like[1] == 'y')) {

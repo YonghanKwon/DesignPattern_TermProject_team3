@@ -18,7 +18,7 @@ public class video {
 	public video(String title) throws IOException, ParseFailure {
 		this.title=title;
 		
-		Database db = new Database("C:/DP2023");
+		Database db = new Database("C:/dp2023");
 		String query="select DISTINCT * from Video where title=\""+title+"\"";
 		Table result = db.execute(query);
 		

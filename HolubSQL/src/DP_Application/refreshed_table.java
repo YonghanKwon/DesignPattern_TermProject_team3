@@ -20,7 +20,7 @@ public class refreshed_table extends Observable{
 		Table result_video;
 		Table result_vie_sub;
 		int size_nonsub;
-		Database db=new Database("C:/DP2023");
+		Database db=new Database("C:/dp2023");
 		String query = "select Distinct* from Video";
 		result_video=db.execute(query);
 		size_nonsub=(int)((ConcreteTable)result_video).getrowSet().size();

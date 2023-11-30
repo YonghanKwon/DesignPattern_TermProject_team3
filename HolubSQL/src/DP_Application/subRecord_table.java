@@ -15,7 +15,7 @@ public class subRecord_table extends Observable {
 		this.user = user;
 	}
     public void makeTable() throws IOException, ParseFailure {
-		Database db = new Database("C:/DP2023");
+		Database db = new Database("C:/dp2023");
 		String query = "select publisher from Subscribe where subscriber = \""+ user.getName()+"\"";
 		result = db.execute(query);
 		setChanged();

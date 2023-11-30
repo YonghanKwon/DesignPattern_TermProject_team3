@@ -15,7 +15,7 @@ public class viewRecord_table extends Observable {
 		this.user = user;
 	}
     public void makeTable() throws IOException, ParseFailure {
-		Database db = new Database("C:/DP2023");
+		Database db = new Database("C:/dp2023");
 		String query = "select * from ViewRecord where viewer = \""+ user.getName()+"\"";
 		result = db.execute(query);
 		setChanged();
