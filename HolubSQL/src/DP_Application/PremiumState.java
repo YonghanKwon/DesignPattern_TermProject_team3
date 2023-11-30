@@ -40,8 +40,8 @@ public class PremiumState implements State {
         if((like[1] == 'y')) {
             db.execute("insert into Subscribe values (\"" + channel.getName() + "\",\"" + vid[1] + "\",\"" + "false" +"\")");
         }
-        int user_video_num = Integer.parseInt(vid[0]) + 1;
-        db.execute("update Video set vid_num = \"" + user_video_num + "\" where name = \"" + vid[1] + "\"");
+        int user_video_num = Integer.parseInt(vid[3]) + 1;
+        db.execute("update Video set count = \"" + user_video_num + "\" where publisher = \"" + vid[1] + "\"");
 		db.execute("dump");
     }
 }

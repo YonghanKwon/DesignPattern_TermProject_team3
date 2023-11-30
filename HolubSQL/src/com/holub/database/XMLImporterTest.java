@@ -50,7 +50,8 @@ public class XMLImporterTest { //반드시 XMLExporterTest진행후 xml형식의
         assertEquals(builder2.loadWidth(), 5);
         Iterator row2;
         row2=builder2.loadRow();
-        String[][] expected2= {{"1", "Allen", "A", "20", "F"}, {"2", "Troy", "B", "25", "M"}, {"3", "Kevin", "AB", "40", "M"}, {"4", "Goldie", "O", "30", "F"}, {"5", "Chunsik", "B", "31", "M"}, {"6", "Bob", "A", "27", "M"}};
+        String[][] expected2= {{"1", "Allen", "A", "20", "F"}, {"2", "Troy", "B", "25", "M"},
+        		{"3", "Kevin", "AB", "40", "M"}, {"4", "Goldie", "O", "30", "F"}, {"5", "Chunsik", "B", "31", "M"}, {"6", "Bob", "A", "27", "M"}};
         Iterator<String> expected2Iterator=convertArrayToIterator(expected2);
         
         i=0;
@@ -70,7 +71,9 @@ public class XMLImporterTest { //반드시 XMLExporterTest진행후 xml형식의
         assertEquals(builder3.loadWidth(), 5);
         Iterator row3;
         row3=builder3.loadRow();
-        String[][] expected3= {{"The Shawshank Redemption", "1994", "142m", "9.3", "Drama"}, {"The Godfather", "1972", "175m", "9.2", "Crime"}, {"The Dark Knight", "2008", "152m", "9.0", "Action"}, {"Forrest Gump", "1994", "142m", "8.8", "Drama"}, {"Oppenheimer", "2023", "180m", "8.5", "Biography"}};
+        String[][] expected3= {{"The Shawshank Redemption", "1994", "142m", "9.3", "Drama"}, {"The Godfather", "1972", "175m", "9.2", "Crime"},
+        		{"The Dark Knight", "2008", "152m", "9.0", "Action"}, {"Forrest Gump", "1994", "142m", "8.8", "Drama"},
+        		{"Oppenheimer", "2023", "180m", "8.5", "Biography"}};
         Iterator<String> expected3Iterator=convertArrayToIterator(expected3);
         
         i=0;

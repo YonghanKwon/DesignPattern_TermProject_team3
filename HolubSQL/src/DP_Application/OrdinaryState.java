@@ -48,8 +48,8 @@ public class OrdinaryState implements State {
             int curr_sub = Integer.parseInt(db.execute(query).toString().split("\n")[3].split("\t")[0]) + 1;
             db.execute("update Channel set sub_num = \"" + curr_sub + "\" where name = \"" + vid[1] + "\"");
         }
-        int user_video_num = Integer.parseInt(vid[0]) + 1;
-        db.execute("update Video set vid_num = \"" + user_video_num + "\" where name = \"" + vid[1] + "\"");
+        int user_video_num = Integer.parseInt(vid[3]) + 1;
+        db.execute("update Video set count = \"" + user_video_num + "\" where publisher = \"" + vid[1] + "\"");
 		db.execute("dump");
     }
 }

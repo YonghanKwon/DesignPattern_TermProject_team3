@@ -48,8 +48,13 @@ public class ControllerVideo {
 			viewRecord_table.makeTable();
 		}
 		else if(state==51) {
-			System.out.println("upload video");
-
+			System.out.println("Enter title:");
+			String title = sc.next();
+			System.out.println("Enter duration: (XX:YY:ZZ)");
+			String duration = sc.next();
+			System.out.println("Enter classfication:");
+			String classfication = sc.next();
+			video Video = new video(title,user.getName(),duration,0,classfication);
 		}
 	}
 }

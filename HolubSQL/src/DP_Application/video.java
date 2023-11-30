@@ -41,21 +41,24 @@ public class video {
 		
 		Table check=db.execute("select * from Video where title=\""+title+"\",publisher = \""+publisher+"\",duration=\""+duration+"\",count=\""+count+"\",classfication=\""+classfication+"\"");
 		String[] temp_table = check.toString().split("\n");
-		System.out.println(check);
+
 		if(temp_table.length==3)   //check table is empty
 		{
 		   db.execute("insert into Video (title,publisher,duration,count,classfication) values (\""+title+"\",\""+publisher+"\",\""+duration+"\",\""+count+"\",\""+classfication+"\")");
 		   db.execute("dump");
 		   Table tempTable;
 		   tempTable=db.execute("select vid_num from Channel where name = \""+publisher+"\"");
-		   System.out.println(tempTable);
+
 		   temp_table = tempTable.toString().split("\n");
 		   String[] vid = temp_table[3].split("\\t");
 		   int user_video_num=Integer.parseInt(vid[0]);
 		   user_video_num++;
 		   db.execute("update Channel set vid_num = \""+user_video_num+"\" where name = \""+publisher+"\"");
 		   db.execute("dump");
+		   System.out.println("Video "+title+" is inserted in Database");
 		}
+		else
+			System.out.println("Video "+title+" already exists in Database");
 		
 	 }
 }
