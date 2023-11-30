@@ -21,7 +21,7 @@ public class channel {
 		this.name = name;
 		premiumState = new PremiumState();
 		ordinaryState = new OrdinaryState();
-		Database db = new Database("C:/DP2023");
+		Database db = new Database("C:/dp2023");
 		
 		String query="select DISTINCT * from Channel where name=\""+name+"\"";
 		Table result = db.execute(query);

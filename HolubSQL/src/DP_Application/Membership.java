@@ -13,7 +13,7 @@ public class Membership {
 		this.target = target;
 	}
 	public void mediate(String target, String ord) throws IOException, ParseFailure {
-		Database db = new Database("C:/DP2023");
+		Database db = new Database("C:/dp2023");
 		String date = LocalDate.now().toString().replace("-", "");
 		db.execute("insert into Membership values (\"" + ord + "\",\"" + target + "\",\"" + date + "\")");
 		db.execute("dump");
